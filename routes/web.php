@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('index');
@@ -91,9 +92,34 @@ Route::get('/login', function () {
     return view('login');
 })->name('login');
 
+Route::post('/login', function () {
+    $credentials = request()->only('email', 'password');
+    $remember = request()->boolean('remember');
+
+    if (Auth::attempt($credentials, $remember)) {
+        request()->session()->regenerate();
+        return redirect()->route('dashboard');
+    }
+
+    return back()->withErrors(['email' => 'The provided credentials do not match our records.'])->withInput();
+})->name('login.store');
+
 Route::get('/register', function () {
     return view('register');
 })->name('register');
+
+Route::post('/register', function () {
+    User::create([
+        'name' => request('name'),
+        'email' => request('email'),
+        'password' => Hash::make(request('password')),
+        'avatar' => 'default.png',
+        'role' => 'User',
+        'team' => null,
+        'status' => 'Active',
+    ]);
+    return redirect()->route('login')->with('success', 'Registration successful. Please log in.');
+})->name('register.store');
 
 Route::get('/forgot-password', function () {
     return view('forgot_password');
