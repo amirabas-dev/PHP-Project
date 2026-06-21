@@ -9,7 +9,42 @@ class DashboardController extends Controller
      */
     public function dashboard()
     {
-        return view('index');
+        $notifications = $this->notifications();
+        return view('index', compact('notifications'));
+    }
+
+    /**
+     * Get the dashboard notification feed.
+     */
+    private function notifications()
+    {
+        $stored = session('dashboard_notifications', []);
+
+        $defaults = [
+            [
+                'id' => 'new-user',
+                'title' => 'New user registered',
+                'message' => 'A new user has joined the platform.',
+                'time' => '4 minutes ago',
+                'href' => route('notifications.show', ['id' => 'new-user']),
+            ],
+            [
+                'id' => 'revenue-target',
+                'title' => 'Revenue target reached',
+                'message' => 'Your monthly revenue target was achieved.',
+                'time' => '32 minutes ago',
+                'href' => route('notifications.show', ['id' => 'revenue-target']),
+            ],
+            [
+                'id' => 'security-review',
+                'title' => 'Security review completed',
+                'message' => 'The weekly security review is complete.',
+                'time' => '1 hour ago',
+                'href' => route('notifications.show', ['id' => 'security-review']),
+            ],
+        ];
+
+        return array_merge($stored, $defaults);
     }
 
     /**

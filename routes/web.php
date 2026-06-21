@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 
 // Dashboard & General Pages
 Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
@@ -35,3 +36,4 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.store');
 Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');

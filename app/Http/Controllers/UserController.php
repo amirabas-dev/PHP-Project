@@ -29,7 +29,7 @@ class UserController extends Controller
      */
     public function store()
     {
-        User::create([
+        $user = User::create([
             'name' => request('first_name') . ' ' . request('last_name'),
             'email' => request('email'),
             'password' => Hash::make('password'),
@@ -40,7 +40,17 @@ class UserController extends Controller
             'status' => 'Active',
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully!');
+        $notifications = session('dashboard_notifications', []);
+        $notifications[] = [
+            'id' => 'new-user-' . $user->id,
+            'title' => 'New user registered',
+            'message' => 'New user ' . $user->name . ' has been added to the system.',
+            'time' => now()->diffForHumans(),
+            'href' => route('users.show', ['id' => $user->id]),
+        ];
+        session(['dashboard_notifications' => $notifications]);
+
+        return redirect()->route('dashboard')->with('success', 'User created successfully!');
     }
 
     /**
@@ -49,7 +59,44 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::findOrFail($id);
-        return view('user_details', ['user' => $user]);
+        return view('user_details', [
+            'user' => $user,
+            'notifications' => $this->notifications(),
+        ]);
+    }
+
+    /**
+     * Get dashboard notification feed.
+     */
+    private function notifications()
+    {
+        $stored = session('dashboard_notifications', []);
+
+        $defaults = [
+            [
+                'id' => 'new-user',
+                'title' => 'New user registered',
+                'message' => 'A new user has joined the platform.',
+                'time' => '4 minutes ago',
+                'href' => route('users.index'),
+            ],
+            [
+                'id' => 'revenue-target',
+                'title' => 'Revenue target reached',
+                'message' => 'Your monthly revenue target was achieved.',
+                'time' => '32 minutes ago',
+                'href' => route('charts'),
+            ],
+            [
+                'id' => 'security-review',
+                'title' => 'Security review completed',
+                'message' => 'The weekly security review is complete.',
+                'time' => '1 hour ago',
+                'href' => route('settings'),
+            ],
+        ];
+
+        return array_merge($stored, $defaults);
     }
 
     /**

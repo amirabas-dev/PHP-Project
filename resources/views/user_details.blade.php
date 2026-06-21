@@ -113,18 +113,14 @@
               </button>
               <div class="dropdown-menu dropdown-menu-end notification-menu">
                 <div class="dropdown-header fw-bold text-body">Notifications</div>
-                <a class="dropdown-item" href="{{ route('users.index') }}">
-                  <span class="notification-title">New user registered</span>
-                  <span class="notification-time">4 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="{{ route('charts') }}">
-                  <span class="notification-title">Revenue target reached</span>
-                  <span class="notification-time">32 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="{{ route('settings') }}">
-                  <span class="notification-title">Security review completed</span>
-                  <span class="notification-time">1 hour ago</span>
-                </a>
+                @forelse($notifications as $notification)
+                  <a class="dropdown-item" href="{{ $notification['href'] }}">
+                    <span class="notification-title">{{ $notification['title'] }}</span>
+                    <span class="notification-time">{{ $notification['time'] }}</span>
+                  </a>
+                @empty
+                  <div class="dropdown-item text-muted">No notifications available.</div>
+                @endforelse
               </div>
             </div>
 
