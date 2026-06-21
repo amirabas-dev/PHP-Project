@@ -1,0 +1,11 @@
+vendor
+node_modules
+npm-debug.log
+Dockerfile
+docker-compose.yml
+.env
+.env.*
+storage/*.key
+tests
+.idea
+.vscode
